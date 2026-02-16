@@ -26,7 +26,13 @@ interface PostProps {
 export const revalidate = 60;
 
 export default async function BlogPost({ params }: PostProps) {
-    const post = await client.fetch(POST_QUERY, { slug: params.slug });
+    let post = null;
+    try {
+        post = await client.fetch(POST_QUERY, { slug: params.slug });
+    } catch (error) {
+        console.warn("Failed to fetch post:", error);
+        // Fallback for build time without env vars
+    }
 
     if (!post) {
         notFound();
